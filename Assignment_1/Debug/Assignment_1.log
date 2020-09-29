@@ -1,4 +1,4 @@
 ﻿  main.cpp
-c:\users\mansour\desktop\assignment_1\assignment_1\main.cpp(32): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-c:\users\mansour\desktop\assignment_1\assignment_1\main.cpp(63): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\users\mansour\desktop\assignment_1\assignment_1\main.cpp(34): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\mansour\desktop\assignment_1\assignment_1\main.cpp(290): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
   Assignment_1.vcxproj -> C:\Users\Mansour\Desktop\Assignment_1\Debug\Assignment_1.exe

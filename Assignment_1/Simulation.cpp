@@ -49,10 +49,10 @@ void unit(int x, int y)
 	}
 
 	glBegin(GL_LINE_LOOP); //begin drawing
-		glVertex2f(x, y); //bottom left vertex
-		glVertex2f(x+1, y); //bottom right vertex
-		glVertex2f(x+1, y+1); //top right vertex
-		glVertex2f(x, y+1); //top left vertex
+	glVertex2f(x, y); //bottom left vertex
+	glVertex2f(x + 1, y); //bottom right vertex
+	glVertex2f(x + 1, y + 1); //top right vertex
+	glVertex2f(x, y + 1); //top left vertex
 	glEnd(); //end drawing
 }
 

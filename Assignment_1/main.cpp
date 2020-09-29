@@ -5,13 +5,14 @@
 #include "Simulation.h" //Simulation file
 
 #include <iostream>//for printing
-#include <algorithm>//for fill_n function
+#include <string> // to convert integer to string
+#include <vector> //for storing location of cancer cells during initilization
 
 //macros for grid
-#define COLUMNS 40
-#define ROWS 40
+#define COLUMNS 50
+#define ROWS 50
 //macro for fps
-#define FPS 1
+#define FPS 10
 
 //access the sDirection found in Simulation.cpp
 extern int sDirection;
@@ -21,14 +22,15 @@ using namespace std;
 bool initialize;
 double first_x = 0.0;
 double first_y = 0.0;
-int rowSize = 10;
-int columnSize = 10;
 
 //create a 2D array to hold the cell positions (initially all elements in the array are 0's which represent healthy cells)
 int cell_array[ROWS][COLUMNS];
 
+//vector to hold the strings of cancer cell location for initialization
+vector<string> cancerCells;
+
 //add cancer cells (represented by integer 1) to 25% of the array
-int totalCells = rowSize * columnSize;
+int totalCells = COLUMNS * ROWS;
 int cancerCellCount = totalCells * 0.25;
 
 //create a random number generator from 0 to total cells
@@ -46,8 +48,11 @@ int cancerCellCount = totalCells * 0.25;
 void timer(int);
 void display();
 void reshape_callback(int, int);
-void drawHealthyCells();
-void keyboard_callback(int, int, int); //first argument is key press other two arguments are position of mouse
+void drawCells();
+void keyboard(unsigned char key, int x, int y); //first argument is key press other two arguments are position of mouse
+string randomCellSelector();
+bool checkVector(string str);
+void generateInitialCancerCells();
 
 //initialized the grid with specific number of columns and rows
 void initializeScreen()
@@ -57,35 +62,25 @@ void initializeScreen()
 	initializeGrid(COLUMNS, ROWS);
 }
 
-void drawHealthyCells()
-{
-	glColor3f(0.2, 0.75, 0.2);//color of the healthy cells
-	for (int x = 0; x < COLUMNS; x++)
-	{
-		for (int y = 0; y < ROWS; y++)
-		{
-			if (cell_array[x][y] == 0)
-				glRectd(x, y, x + 1, y + 1);  //(vertex coordinate, opposite vertex coordinate)
-		}
-	}
-}
+
 
 //int index = 0;
 void display()
 {
 	//clear buffer at the begining of each frame
 	glClear(GL_COLOR_BUFFER_BIT);
-	
-	
-	
-	//draw the healthy cells every frame
-	//drawHealthyCells();
+
+
+
+
+	drawCells();
 
 	//draw grid every frame
 	drawGrid();
 
-	drawSnake();
-	
+
+	//drawSnake();
+
 	//glRectd(index, 20, index + 1, 21); // (vertex , opposite vertex)
 	//index++;
 	//if (index > 40)
@@ -147,6 +142,7 @@ void display()
 
 	//Call swap buffers at end of display
 	glutSwapBuffers();
+	glutKeyboardFunc(keyboard);
 }
 
 int main(int argc, char **argv)
@@ -162,9 +158,28 @@ int main(int argc, char **argv)
 	//registers a callback after a specified amount of ms have passed (here it only executes once)
 	glutTimerFunc(0, timer, 0); //first argument is when the first frame is displayed, function, int value passed to timer
 
-	glutSpecialFunc(keyboard_callback);
+	//glutSpecialFunc(keyboard_callback);
 
 	initializeScreen();//added this
+
+	generateInitialCancerCells();
+
+
+	//cout << totalCells << endl;
+	//cout << cancerCellCount << endl;
+	//for (auto it = cancerCells.cbegin(); it != cancerCells.cend(); it++)
+	//{
+	//	cout << *it << ' ';
+	//}
+
+	//cout << "printing main array" << endl;
+	//for (int i = 0; i < ROWS; i++)
+	//{
+	//	for (int j = 0; j < COLUMNS; j++)
+	//	{
+	//		cout << cell_array[i][j] << endl;
+	//	}
+	//}
 
 	glutMainLoop();
 	return 0;
@@ -195,13 +210,135 @@ void timer(int)
 	glutPostRedisplay(); //tells opengl to call display function
 	//re call the glutTimerFunc found in main
 	//we want 10 fps, 1s = 1000ms ,  1s / 10frames = 10 frames per second 
-	glutTimerFunc(1000/FPS, timer, 0);  
+	glutTimerFunc(1000 / FPS, timer, 0);
 }
 
-void keyboard_callback(int key, int, int) //we dont need to know mouse position
+
+string randomCellSelector()
 {
-	switch (key)
+	int v1 = rand() % ROWS;
+	int v2 = rand() % COLUMNS;
+	string str1 = to_string(v1);
+	string str2 = to_string(v2);
+	string str = str1 + str2;
+	return str;
+}
+
+
+
+bool checkVector(string str)
+{
+	if (count(cancerCells.begin(), cancerCells.end(), str))
+		return false; //String already exists in the vector
+	else
+		return true;
+}
+
+
+
+void generateInitialCancerCells()
+{
+	int count = 0;
+	while (count != cancerCellCount)
 	{
-		case glutSpecialFunc
+		//string str = randomCellSelector();
+		int row = rand() % ROWS;
+		int column = rand() % COLUMNS;
+		string str1 = to_string(row);
+		string str2 = to_string(column);
+		string str = str1 + str2;
+
+		if (checkVector(str) == false)
+		{
+			continue;
+		}
+		else
+		{
+			cancerCells.push_back(str);
+			cell_array[row][column] = 1;
+			count++;
+		}
+
+	}
+	
+	
+}
+
+
+
+void keyboard(unsigned char key, int x, int y) //we dont need to know mouse position
+{
+	if (key == 27)
+	{
+		exit(0);
+	}
+
+	if (key == 32)
+	{
+		//make random injection around a cancer cell
+	}
+} 
+
+void drawCells()
+{
+	
+	for (int x = 0; x < COLUMNS; x++)
+	{
+		for (int y = 0; y < ROWS; y++)
+		{
+			if (cell_array[x][y] == 0) {
+				glColor3f(0.2, 0.75, 0.2);//color of the healthy cells
+				glRectd(x, y, x + 1, y + 1);  //(vertex coordinate, opposite vertex coordinate)
+			}
+			if (cell_array[x][y] == 1) {
+				glColor3f(0.5, 0.0, 0.0);//color of the healthy cells
+				glRectd(x, y, x + 1, y + 1);  //(vertex coordinate, opposite vertex coordinate)
+			}
+		}
+	}
+}
+
+void cancerGrowth()
+{
+	for (int i = 0; i < COLUMNS; i++)
+	{
+		for (int j = 0; j < ROWS; j++)
+		{
+			//for now skip first row, first column, last row, last column
+			int cancerProximityCounter = 0;
+			if (cell_array[i][j] == 0)
+			{
+				continue;
+			}
+			else
+			{
+				if (cell_array[i][j - 1] == 1) //left
+					cancerProximityCounter++;
+				if (cell_array[i - 1][j - 1] == 1) //top left
+					cancerProximityCounter++;
+				if (cell_array[i - 1][j] == 1) //top 
+					cancerProximityCounter++;
+				if (cell_array[i - 1][j + 1] == 1) //top right
+					cancerProximityCounter++;
+				if (cell_array[i][j + 1] == 1) //right
+					cancerProximityCounter++;
+				if (cell_array[i + 1][j + 1] == 1) //bottom right
+					cancerProximityCounter++;
+				if (cell_array[i + 1][j] == 1) //bottom
+					cancerProximityCounter++;
+				if (cell_array[i + 1][j - 1] == 1) //bottom left
+					cancerProximityCounter++;
+
+				if (cancerProximityCounter > 5)
+				{
+					cell_array[i][j] = 1;
+				}
+				
+			}
+
+
+
+
+		}
 	}
 }
