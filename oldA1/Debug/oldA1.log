@@ -1,0 +1,8 @@
+﻿  main.cpp
+C:\Users\Mansour\Desktop\oldA1\oldA1\main.cpp(32,21): warning C4244:  'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\Mansour\Desktop\oldA1\oldA1\main.cpp(102,30): warning C4805:  '==': unsafe mix of type 'int' and type 'bool' in operation
+C:\Users\Mansour\Desktop\oldA1\oldA1\main.cpp(106,30): warning C4805:  '==': unsafe mix of type 'int' and type 'bool' in operation
+C:\Users\Mansour\Desktop\oldA1\oldA1\main.cpp(111,29): warning C4805:  '==': unsafe mix of type 'int' and type 'bool' in operation
+C:\Users\Mansour\Desktop\oldA1\oldA1\main.cpp(115,29): warning C4805:  '==': unsafe mix of type 'int' and type 'bool' in operation
+C:\Users\Mansour\Desktop\oldA1\oldA1\main.cpp(381,21): warning C4553:  '==': result of expression not used; did you intend '='?
+  oldA1.vcxproj -> C:\Users\Mansour\Desktop\oldA1\Debug\oldA1.exe
