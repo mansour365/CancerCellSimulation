@@ -5,6 +5,7 @@
 #include <iostream>//for printing
 #include <string> // to convert integer to string
 #include <vector> //for storing location of cancer cells during initilization
+#include <thread> 
 
 using namespace std;
 
@@ -15,6 +16,8 @@ void generateInitialCancerCells();
 void generateMedicineCells();
 void moveMedicineCells(int i, int j);
 void cellCounter();
+int start;
+void simulation(int start);
 
 //macros for grid
 #define ROWS 60
@@ -155,14 +158,41 @@ void cellCancerCheck(int x, int y)
 
 }
 
-static void display()
+void display()
 {
+
 	//clear buffer at the begining of each frame
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	setCellColor(); //set cell color given its current value
 
-	for (int i = 0; i < ROWS ; i++) {
+	simulation(start);
+
+	//for (int i = start; i < ROWS; i++) {
+	//	for (int j = 0; j < COLUMNS; j++) {
+
+	//		cellCancerCheck(i, j); //check if current cell should become cancerous
+
+	//		cellHealthyCheck(i, j); //check if current cell should become healthy
+
+	//		moveMedicineCells(i, j); //move medicine Cells radially outwards
+
+	//	}
+	//}
+
+	cellCounter(); //count number of each type of cell, display results
+
+	glutKeyboardFunc(keyboard); //check for user input
+
+	glutSwapBuffers();
+
+
+
+}
+
+void simulation(int start)
+{
+	for (int i = start; i < ROWS ; i++) {
 		for (int j = 0; j < COLUMNS ; j++) {
 
 			cellCancerCheck(i, j); //check if current cell should become cancerous
@@ -173,13 +203,6 @@ static void display()
 
 		}
 	}
-
-	cellCounter(); //count number of each type of cell, display results
-
-	glutKeyboardFunc(keyboard); //check for user input
-
-	glutSwapBuffers();
-
 }
 
 
@@ -190,12 +213,28 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(900, 900); //original 640 x 480
 	glutCreateWindow("Assignment 1 - Cancer Cell Simulation");
-
 	init(); //initialize background color and 2D ortho grid
-
 	generateInitialCancerCells(); //randomly generate initial cancer cells in 2D array
 
+
+
 	glutDisplayFunc(display);
+
+	//Threading
+	std::thread thread1(simulation, start);
+	cout << "thread 1 started with param " << start << endl;
+	std::thread thread2(simulation, start + (ROWS / 3 * 1));
+	cout << "thread 1 started with param " << start + (ROWS / 3 * 1) << endl;
+	std::thread thread3(simulation, start + (ROWS / 3 * 2));
+	cout << "thread 1 started with param " << start + (ROWS / 3 * 2) << endl;
+
+
+	thread1.join(); //wait for thread one to finish
+	cout << "thread 1 joined" << endl;
+	thread2.join();
+	cout << "thread 2 joined" << endl;
+	thread3.join();
+	cout << "thread 3 joined" << endl;
 
 	//registers a callback after a specified amount of ms have passed (here it only executes once)
 	glutTimerFunc(0, timer, 0); //first argument is when the first frame is displayed, function, int value passed to timer
@@ -222,7 +261,6 @@ int main(int argc, char **argv)
 
 void moveMedicineCells(int i, int j)
 {
-	int lastTravelledMedicine = 0;
 
 	if (cell[i][j] == 2) //if cell is a 2, switch with cell above
 	{
@@ -234,7 +272,6 @@ void moveMedicineCells(int i, int j)
 			int temp = cell[i - 1][j];
 			cell[i][j] = temp;
 			cell[i - 1][j] = 2;
-			lastTravelledMedicine = 2;
 		}
 	}
 
@@ -248,91 +285,58 @@ void moveMedicineCells(int i, int j)
 			int temp = cell[i - 1][j + 1];
 			cell[i][j] = temp;
 			cell[i - 1][j + 1] = 3;
-			lastTravelledMedicine = 3;
 		}
 	}
 
-	else if (cell[i][j] == 4) //not working properly
+	else if (cell[i][j] == 4) //not working properly!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	{
 		if (j + 1 == 0 || i == 0 || j == 0 || i == ROWS - 1 || j == COLUMNS - 1) //if to close to the end of array disappear
 		{
 			cell[i][j] = 0;
 		}
 		else {//move cell right
-			if (lastTravelledMedicine == 4)
-			{
-				lastTravelledMedicine = 0;
-			}
-			else {
-				int temp = cell[i][j + 1];
-				cell[i][j] = temp;
-				cell[i][j + 1] = 4;
-				lastTravelledMedicine = 4;
-			}
-			
+			int temp = cell[i][j + 1];
+			cell[i][j] = temp;
+			cell[i][j + 1] = 4;
 		}
 
 	}
-	else if (cell[i][j] == 5) //not working properly
+	else if (cell[i][j] == 5) //not working properly!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	{
 		if (i + 1 == 0 || j + 1 == 0 || i == 0 || j == 0 || i == ROWS - 1 || j == COLUMNS - 1) //if to close to the end of array disappear
 		{
 			cell[i][j] = 0;
 		}
 		else {//move cell bottom-right diagonal
-			if (lastTravelledMedicine == 5)
-			{
-				lastTravelledMedicine = 0;
-			}
-			else {
-				int temp = cell[i + 1][j + 1];
-				cell[i][j] = temp;
-				cell[i + 1][j + 1] = 5;
-				lastTravelledMedicine = 5;
-			}
-			
+			int temp = cell[i + 1][j + 1];
+			cell[i][j] = temp;
+			cell[i + 1][j + 1] = 5;
 		}
 		
 	}
-	else if (cell[i][j] == 6) //not working properly
+	else if (cell[i][j] == 6) //not working properly!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	{
 		if (i + 1 == 0 || i == 0 || j == 0 || i == ROWS - 1 || j == COLUMNS - 1) //if to close to the end of array disappear
 		{
 			cell[i][j] = 0;
 		}
 		else {//move cell down
-			if (lastTravelledMedicine == 6)
-			{
-				lastTravelledMedicine = 0;
-			}
-			else {
-				int temp = cell[i + 1][j];
-				cell[i][j] = temp;
-				cell[i + 1][j] = 6;
-				lastTravelledMedicine = 6;
-			}
-
+			int temp = cell[i + 1][j];
+			cell[i][j] = temp;
+			cell[i + 1][j] = 6;
 		}
 
 	}
-	else if (cell[i][j] == 7) //not working properly
+	else if (cell[i][j] == 7) //not working properly!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	{
 		if (i + 1 == 0 || j - 1 == 0 || i == 0 || j == 0 || i == ROWS - 1 || j == COLUMNS - 1) //if to close to the end of array disappear
 		{
 			cell[i][j] = 0;
 		}
 		else { //move cell bottom-left down
-			if (lastTravelledMedicine == 7)
-			{
-				lastTravelledMedicine = 0;
-			}
-			else {
-				int temp = cell[i + 1][j - 1];
-				cell[i][j] = temp;
-				cell[i + 1][j - 1] = 7;
-				lastTravelledMedicine = 7;
-			}
-
+			int temp = cell[i + 1][j - 1];
+			cell[i][j] = temp;
+			cell[i + 1][j - 1] = 7;
 		}
 		
 	}
@@ -346,7 +350,6 @@ void moveMedicineCells(int i, int j)
 			int temp = cell[i][j - 1];
 			cell[i][j] = temp;
 			cell[i][j - 1] = 8;
-			lastTravelledMedicine = 8;
 		}
 	}
 
@@ -360,7 +363,6 @@ void moveMedicineCells(int i, int j)
 			int temp = cell[i - 1][j - 1];
 			cell[i][j] = temp;
 			cell[i - 1][j - 1] = 9;
-			lastTravelledMedicine = 9;
 		}
 	}
 

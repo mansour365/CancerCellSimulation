@@ -1,3 +1,3 @@
 ﻿  main.cpp
-C:\Users\Mansour\Desktop\oldA1\oldA1\main.cpp(31,21): warning C4244:  'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\Mansour\Desktop\oldA1\oldA1\main.cpp(34,21): warning C4244:  'initializing': conversion from 'double' to 'int', possible loss of data
   oldA1.vcxproj -> C:\Users\Mansour\Desktop\oldA1\Debug\oldA1.exe
